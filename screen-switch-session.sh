@@ -45,6 +45,17 @@ ss() {
 	done 
 }
 
+st() {
+	update_line_in_file 1 0 "$NEXT_SESSION_STORAGE_FILE"
+    PREVIOUS_SESSION=$(sed -n 2p "$NEXT_SESSION_STORAGE_FILE")
+    # Previous session becomes the next session
+	update_line_in_file 3 "$PREVIOUS_SESSION" "$NEXT_SESSION_STORAGE_FILE"
+	# Current session becomes the previous session
+	update_line_in_file 2 "$STY" "$NEXT_SESSION_STORAGE_FILE"
+	screen -d
+}
+
+
 si() {
 	update_line_in_file 1 0 "$NEXT_SESSION_STORAGE_FILE"
 	update_line_in_file 2 "$STY" "$NEXT_SESSION_STORAGE_FILE"
