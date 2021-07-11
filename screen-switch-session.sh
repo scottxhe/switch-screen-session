@@ -21,7 +21,7 @@ ss() {
 	 return 1
 	fi
 
-        # Initiailize storage
+    # Initiailize storage
 	echo -e '1\n0\n0' > "$NEXT_SESSION_STORAGE_FILE"
     
 	while true; do
@@ -44,6 +44,18 @@ ss() {
 	update_line_in_file 3 0 "$NEXT_SESSION_STORAGE_FILE"
 	done 
 }
+
+# Toggle between current and previous session
+st() {
+	update_line_in_file 1 0 "$NEXT_SESSION_STORAGE_FILE"
+    PREVIOUS_SESSION=$(sed -n 2p "$NEXT_SESSION_STORAGE_FILE")
+    # Previous session becomes the next session
+	update_line_in_file 3 "$PREVIOUS_SESSION" "$NEXT_SESSION_STORAGE_FILE"
+	# Current session becomes the previous session
+	update_line_in_file 2 "$STY" "$NEXT_SESSION_STORAGE_FILE"
+	screen -d
+}
+
 
 si() {
 	update_line_in_file 1 0 "$NEXT_SESSION_STORAGE_FILE"
