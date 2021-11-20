@@ -31,7 +31,8 @@ ss() {
 	    OUTPUT=$(screen -d -r $SESSION)
             while [ "$?" -eq 1 ]; do
                PREVIOUS_SESSION=$(sed -n 2p "$NEXT_SESSION_STORAGE_FILE")
-               OUTPUT=$(screen -S $PREVIOUS_SESSION -X stuff "echo \"${OUTPUT}\"" && screen -d -r $PREVIOUS_SESSION)
+               OUTPUT=$(screen -S $PREVIOUS_SESSION -X stuff "echo \"${OUTPUT}\"
+" && screen -d -r $PREVIOUS_SESSION)
             done
 	 fi
 	 NEXT_SESSION=$(sed -n 3p  "$NEXT_SESSION_STORAGE_FILE")
@@ -80,6 +81,26 @@ si() {
 
 	update_line_in_file 3 "$SESSION" "$NEXT_SESSION_STORAGE_FILE"
 	screen -d $STY
+}
+
+si2() {
+	next_session=$1
+
+	if [ -z "$STY" ]; then
+		mkfifo ~/.next_s
+		echo $next_session > ~/.next_s &
+		while true; do
+			next=$(cat ~/.next_s)
+			if [ -z "$next" ]; then
+				return 0
+			else
+				screen -R $next
+			fi
+		done
+	else
+		echo $next_session > ~/.next_s &
+		screen -d $STY
+	fi
 }
 
 sls() {
