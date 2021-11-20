@@ -87,19 +87,28 @@ si2() {
 	next_session=$1
 
 	if [ -z "$STY" ]; then
-		mkfifo ~/.next_s
+
+		if [ ! -e ~/.next_s ]; then
+			mkfifo ~/.next_s
+		fi
+
 		echo $next_session > ~/.next_s &
+
 		while true; do
-			next=$(cat ~/.next_s)
-			if [ -z "$next" ]; then
+			next="$(cat ~/.next_s)"
+			next_line=$(wc -l <<<"$next")
+			echo "$next"
+			echo "$next_line"
+			if [ $next_line -eq 1 ] && [ $next == 'outta' ]; then
 				return 0
 			else
-				screen -R $next
+				screen -R $(grep -v "outta" <<< "$next")
+				echo 'outta' > ~/.next_s &
 			fi
 		done
 	else
 		echo $next_session > ~/.next_s &
-		screen -d $STY
+		screen -d
 	fi
 }
 
