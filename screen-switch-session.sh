@@ -17,13 +17,13 @@ ss() {
 			if [ -z "$next" ]; then
 				return 0
 			else
-				screen -R $(grep -v "^$" <<< "$next")
+				screen -dR $(grep -v "^$" <<< "$next")
 				echo '' > ~/.next_s &
 			fi
 		done
 	else
 		echo $next_session > ~/.next_s &
-		screen -d
+		screen -d $STY
 	fi
 }
 
