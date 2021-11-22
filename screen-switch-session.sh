@@ -2,6 +2,7 @@
 
 ss() {
 	next_session=$1
+	prev_session=$1
 
 	if [ -z "$STY" ]; then
 
@@ -9,30 +10,47 @@ ss() {
 			mkfifo ~/.next_s
 		fi
 
+		if [ ! -e ~/.prev_s ]; then
+			mkfifo ~/.prev_s
+		fi
+
 		echo $next_session > ~/.next_s &
+		echo $prev_session > ~/.prev_s &
 
 		while true; do
 			next="$(cat ~/.next_s)"
+			prev="$(cat ~/.prev_s)"
 
-			if [ -z "$next" ]; then
+			if [ -z "$next" ] && [ -z "$prev" ]; then
 				return 0
+			elif grep "^~" <<< "$prev"; then
+				next_session=$prev_session
+				echo $next_session
+				echo here
+				prev_session="$(sed s/~// <<<"$prev" | grep -v "^$")"
 			else
-				screen -dR $(grep -v "^$" <<< "$next")
-				echo '' > ~/.next_s &
+				prev_session=$prev
+				next_session=$(grep -v "^$" <<< "$next")
 			fi
+
+			screen -dR $next_session
+			echo '' > ~/.next_s &
+			echo '' > ~/.prev_s &
 		done
 	else
 		echo $next_session > ~/.next_s &
+		echo $STY > ~/.prev_s &
 		screen -d $STY
 	fi
 }
 
-sls() {
-    screen -ls
+st() {
+	echo "~$STY" > ~/.prev_s &
+	screen -d $STY
 }
 
-sn() {
-    echo "$STY"
+sls() {
+    screen -ls
 }
 
 _switch_session_autocomplete()
