@@ -1,6 +1,11 @@
 #! /bin/bash
 
 ss() {
+	if [ -z $1 ]; then
+		screen -ls
+		return 0
+	fi
+
 	next_session=$1
 	prev_session=$1
 
@@ -49,12 +54,7 @@ st() {
 	screen -d $STY
 }
 
-sls() {
-    screen -ls
-}
-
-_switch_session_autocomplete()
-{
+_switch_session_autocomplete() {
  local cur
  COMPREPLY=()
  cur=${COMP_WORDS[COMP_CWORD]}
