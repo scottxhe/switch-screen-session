@@ -19,8 +19,10 @@ ss() {
 			mkfifo ~/.prev_s
 		fi
 
-		echo $next_session > ~/.next_s &
-		echo $prev_session > ~/.prev_s &
+		(
+		    echo $next_session > ~/.next_s &
+			echo $prev_session > ~/.prev_s &
+		)
 
 		while true; do
 			next="$(cat ~/.next_s)"
@@ -28,10 +30,8 @@ ss() {
 
 			if [ -z "$next" ] && [ -z "$prev" ]; then
 				return 0
-			elif grep "^~" <<< "$prev"; then
+			elif grep -q "^~" <<< "$prev"; then
 				next_session=$prev_session
-				echo $next_session
-				echo here
 				prev_session="$(sed s/~// <<<"$prev" | grep -v "^$")"
 			else
 				prev_session=$prev
@@ -39,18 +39,24 @@ ss() {
 			fi
 
 			screen -dR $next_session
-			echo '' > ~/.next_s &
-			echo '' > ~/.prev_s &
+
+			(
+				echo '' > ~/.next_s &
+				echo '' > ~/.prev_s &
+			)
 		done
 	else
-		echo $next_session > ~/.next_s &
-		echo $STY > ~/.prev_s &
+		(
+			echo $next_session > ~/.next_s &
+			echo $STY > ~/.prev_s &
+		)
+
 		screen -d $STY
 	fi
 }
 
 st() {
-	echo "~$STY" > ~/.prev_s &
+	(echo "~$STY" > ~/.prev_s &)
 	screen -d $STY
 }
 
