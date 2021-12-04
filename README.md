@@ -35,11 +35,9 @@ This repo provides a couple of commands that allows users to quickly navigate sc
 `st`
 
 ##### List all sessions
-`ss` this is shortcut to `screen -ls`
+`ss` this is a shortcut to `screen -ls`
 
+**Note:** You can exit screen with native screen commands.
 
-### Note
-You can exit screen with native screen commands.
-
-### Maintenance
-This script has been tested in Linux(Fedora 32), MacOS(Big Sur), and Windows 12(Git Bash), and It does aim to work across all linux and unix platforms. If you find any issues or have any questions, please feel free to reach out to me via email or create an issue in the Issues section. Thanks! 
+## Contact
+Please feel free to contact me for anything regarding this functionaity. 
